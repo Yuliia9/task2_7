@@ -1,11 +1,25 @@
+/**
+* @file		task2_7.cpp
+* @brief	Program creates database of questions with four answers and number of right answer.
+			Then it gives users randomly five questions and their answers and checks users answer.
+			If it is wrong, program shows right answer 
+*
+* Copyright 2014 by Yuliia Lyubchik
+*
+* This software is the confidential and proprietary information
+* of Yuliia Lyubchik. ("Confidential Information").  You
+* shall not disclose such Confidential Information and shall use
+* it only with permission from Yuliia.
+*/
+
 #include "stdafx.h"
 #include "task2_7.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-/*number of question to test*/
-const unsigned int ATTEMPT = 5;
+
+const unsigned int ATTEMPT = 5;	/*maximum number of question in test*/
 
 const unsigned char ERROR = 0;
 const unsigned char SUCCESS = 1;
@@ -16,6 +30,7 @@ int main( )
 	Interface();
 	unsigned int num;
 	unsigned char retCode;
+
 	do
 	{
 		printf("Enter integer number of questions for testing: ");
@@ -24,7 +39,10 @@ int main( )
 	} while (Type_checking(retCode, (int)num) == ERROR);
 
 	printf("List will consist of %u questions.\n", num);
-	struct test*  tests = (test*)malloc(num * sizeof(test));
+
+
+	struct test*  tests = (test*) malloc( num * sizeof(test) );
+
 	if (tests == NULL)
 	{
 		printf("Error occurs while trying to allocate memory for list of tests. \n");
@@ -51,13 +69,17 @@ int main( )
 	return MAIN_SUCCESS;
 }
 
+
 void Interface()
 {
+	printf("------------------------------------------------------------\n");
 	printf("Welcome to your personal testing trainer!. \n\n");
 	printf("Enter question, 4 answer choices and number of right answer.\n");
 	printf("Program will choose 5 questions to test your knowledge.\n");
-	printf("Made by Yuliia Lyubchik.\n\n");
+	printf("Made by Yuliia Lyubchik.\n");
+	printf("-------------------------------------------------------------\n\n");
 }
+
 
 unsigned char Type_checking(unsigned char retCode, int val)
 {
@@ -74,11 +96,12 @@ unsigned char Type_checking(unsigned char retCode, int val)
 	return SUCCESS;
 }
 
+
 unsigned char Input(struct test* tests, unsigned int num)
 {
 	if (tests == NULL)
 	{
-		printf("Error occurs trying to get access to memory.\n");
+		printf("Error occurs while trying to get access to memory to input data.\n");
 		return ERROR;
 	}
 	printf("Please enter questions, 4 answers and number of right answer. \n");
@@ -110,10 +133,10 @@ unsigned char Input(struct test* tests, unsigned int num)
 		{
 			printf("number of right answer: ");
 			retCode = scanf("%u", &tests[i].rigth_answer);
-			tests[i].rigth_answer -= 1;
+			tests[i].rigth_answer -= 1; /*answer's counting starts from 1*/
 			if (tests[i].rigth_answer < 0 || tests[i].rigth_answer > 4)
 			{
-				printf("right answer must be within number of answers. \n");
+				printf("Right answer must be within number of answers. \n");
 				retCode = ERROR;
 			}
 			fflush(stdin); // Flush the input buffer
@@ -121,25 +144,26 @@ unsigned char Input(struct test* tests, unsigned int num)
 		tests[i].tested = 0;
 	}
 	return SUCCESS;
-
 }
+
+
 
 unsigned char Testing(struct test* tests, unsigned int num)
 {
 	if (tests == NULL)
 	{
-		printf("Error occurs trying to get access to data to test questions.\n");
+		printf("Error occurs while trying to get access to data to test questions.\n");
 		return ERROR;
 	}
 
 	system("cls");
 
-	char temp[LEN];
-	unsigned int correctansw = 0, i = 0, j;
+	unsigned int temp;
+	unsigned int correctansw = 0, i = 0, j, n;
 	unsigned int quantity;
 	num >= ATTEMPT ? quantity = ATTEMPT : quantity = num; 
 
-	printf("Let's check you knowledge. \nEnter answers for following question.\n");
+	printf("Let's check you knowledge.\nEnter answers for following question.\n");
 
 
 	while (i < quantity)
@@ -156,9 +180,22 @@ unsigned char Testing(struct test* tests, unsigned int num)
 
 		++i;
 		printf("%s\n", tests[j].question);
-		gets(temp);
+		printf("answers: \n");
+		for (n = 0; n < ANSWERS; ++n)
+		{
+			printf("%u. %s\n", n+1, tests[j].answers[n]);
+		}
+		printf("\n");
+		
+		do 
+		{
+			printf("your answer: ");
+			scanf("%u", &temp);
+		} while (temp < 0 || temp > 4);
+		
+		temp -= 1; /*answer's counting starts from 1*/
 
-		if (strcmp(temp, tests[j].answers[tests[j].rigth_answer]) == 0)
+		if (temp == tests[j].rigth_answer )
 		{
 			++correctansw;
 			printf("good job! correct answer;) \n");
@@ -172,8 +209,5 @@ unsigned char Testing(struct test* tests, unsigned int num)
 
 	printf("Percentage of correct answers is %0.2f percent \n", (float)correctansw / quantity * 100);
 	return SUCCESS;
-
-
-
 }
 
